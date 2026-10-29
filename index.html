@@ -1,1 +1,293 @@
 
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>اختبر نفسك</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--asphalt:#1f2a33;--paper:#f5f6f3;--card:#fff;--line:#d9ddd6;--hivis:#f2c200;--ok:#1e8e5a;--ok-bg:#e2f4ea;--bad:#c8402f;--bad-bg:#fbe6e2;--muted:#5d6872;--sel:#e8eefc}
+@media (prefers-color-scheme:dark){:root{--asphalt:#f1f3ef;--paper:#171d22;--card:#212a31;--line:#35414a;--ok:#4cc58b;--ok-bg:#16382a;--bad:#ff7d6b;--bad-bg:#44201b;--muted:#a2adb6;--sel:#27344d}}
+*{box-sizing:border-box}html,body{margin:0}
+body{font-family:'IBM Plex Sans Arabic',system-ui,sans-serif;background:var(--paper);color:var(--asphalt);min-height:100vh;line-height:1.7;font-size:18px}
+main{max-width:760px;margin:0 auto;padding:20px 14px 64px}
+h1{font-size:2rem;margin:.1em 0 .3em}h2{font-size:1.1rem;margin:1.2em 0 .4em}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px;margin-bottom:14px}
+.stripe{height:8px;border-radius:4px;margin-bottom:18px;background:repeating-linear-gradient(-45deg,var(--hivis) 0 14px,var(--asphalt) 14px 28px)}
+.muted{color:var(--muted)}.small{font-size:.85rem}
+button{font:inherit;cursor:pointer;color:inherit}
+.btn{background:var(--hivis);color:#1f2a33;border:2px solid #1f2a33;border-radius:10px;padding:8px 20px;font-weight:700}
+.btn.ghost{background:transparent;color:var(--asphalt);border-color:var(--line)}
+.btn.danger{background:transparent;color:var(--bad);border-color:var(--bad)}
+.btn:disabled{opacity:.4;cursor:default}
+.chip{background:transparent;border:2px solid var(--line);border-radius:999px;padding:3px 14px;font-size:.9rem}
+.chip:hover{border-color:var(--asphalt)}
+:focus-visible{outline:3px solid var(--hivis);outline-offset:2px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:12px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:520px){.grid2{grid-template-columns:1fr}}
+label.f{display:block;font-size:.95rem}
+input[type=number]{font:inherit;width:100%;padding:6px 10px;border:2px solid var(--line);border-radius:8px;background:var(--paper);color:var(--asphalt)}
+label.chk{display:flex;gap:10px;align-items:center;margin:6px 0}
+.opts{display:grid;gap:10px;margin:16px 0}
+.opt{width:100%;text-align:start;background:var(--card);border:2px solid var(--line);border-radius:10px;padding:11px 14px;display:flex;gap:12px;align-items:center}
+.opt:not(:disabled):hover{border-color:var(--asphalt)}
+.mark{width:1.6em;height:1.6em;border-radius:50%;border:2px solid var(--line);flex:none;display:grid;place-items:center;font-size:.8em}
+.opt.sel{background:var(--sel);border-color:var(--asphalt)}.opt.sel .mark{background:var(--asphalt);color:var(--paper);border-color:var(--asphalt)}
+.opt.right{background:var(--ok-bg);border-color:var(--ok)}.opt.right .mark{background:var(--ok);border-color:var(--ok);color:#fff}
+.opt.wrong{background:var(--bad-bg);border-color:var(--bad)}.opt.wrong .mark{background:var(--bad);border-color:var(--bad);color:#fff}
+.opt:disabled{cursor:default;color:var(--asphalt)}
+.bar{height:6px;background:var(--line);border-radius:3px;overflow:hidden;margin:6px 0 10px}.bar>i{display:block;height:100%;background:var(--ok);transition:width .25s}
+.top{display:flex;justify-content:space-between;font-size:.9rem;color:var(--muted)}
+.dots{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:12px}
+.dot{width:14px;height:14px;border-radius:50%;border:2px solid var(--line);background:transparent;padding:0}
+.dot.a{background:var(--muted);border-color:var(--muted)}.dot.ok{background:var(--ok);border-color:var(--ok)}.dot.bad{background:var(--bad);border-color:var(--bad)}
+.dot.cur{outline:3px solid var(--hivis);outline-offset:1px}
+.qimg{display:block;max-width:100%;max-height:260px;border-radius:8px;border:1px solid var(--line);margin:10px auto;background:#fff;cursor:zoom-in}
+.verdict{min-height:1.8em;font-weight:700}.verdict.ok{color:var(--ok)}.verdict.bad{color:var(--bad)}
+.score{font-size:3.2rem;font-weight:700;line-height:1.1;margin:.1em 0}
+.rv{border-top:1px solid var(--line);padding:14px 0}
+.rv .opts{margin:8px 0}.rv .opt{cursor:default;padding:7px 12px;font-size:.95rem}
+.badge{font-size:.8rem;border-radius:6px;padding:1px 8px;border:1px solid var(--line);color:var(--muted)}
+.badge.bad{color:var(--bad);border-color:var(--bad)}.badge.ok{color:var(--ok);border-color:var(--ok)}
+#zoom{position:fixed;inset:0;background:rgba(0,0,0,.8);display:grid;place-items:center;z-index:9;cursor:zoom-out}
+#zoom img{max-width:92vw;max-height:88vh;background:#fff;border-radius:10px}
+.hide{display:none!important}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<main>
+<div class="stripe" aria-hidden="true"></div>
+
+<!-- START -->
+<section id="start" class="card">
+  <h1>اختبر نفسك</h1>
+  <p class="muted" id="avail">جارٍ تحميل الأسئلة…</p>
+
+  <h2>نوع الأسئلة وعددها</h2>
+  <div class="row" style="margin-top:0">
+    <button class="chip" data-p="text">أسئلة نصية فقط</button>
+    <button class="chip" data-p="img">أسئلة الصور فقط</button>
+    <button class="chip" data-p="mix">مزيج</button>
+    <button class="chip" data-p="all">الكل</button>
+  </div>
+  <div class="grid2" style="margin-top:12px">
+    <label class="f">عدد الأسئلة النصية <span class="muted small" id="tmax"></span><input type="number" id="nT" min="0" value="20"></label>
+    <label class="f">عدد أسئلة الصور <span class="muted small" id="imax"></span><input type="number" id="nI" min="0" value="10"></label>
+  </div>
+
+  <h2>خيارات</h2>
+  <label class="chk"><input type="checkbox" id="shQ" checked> ترتيب الأسئلة عشوائي</label>
+  <label class="chk"><input type="checkbox" id="shO"> ترتيب الخيارات عشوائي</label>
+  <label class="chk"><input type="checkbox" id="exam"> وضع الامتحان (لا تظهر الإجابات إلا في النهاية، ويمكنك تغيير إجابتك)</label>
+
+  <div class="row"><button class="btn" id="go" disabled>ابدأ الاختبار</button>
+    <button class="btn ghost" id="mist">أخطائي المحفوظة (<span id="mc">0</span>)</button>
+    <button class="btn ghost" id="pm">تدرّب على أخطائي</button></div>
+  <p id="msg" class="muted small"></p>
+  <div id="histbox" class="hide"><h2>آخر النتائج</h2><div id="hist" class="small muted"></div></div>
+  <input type="file" id="file" accept=".json" class="hide">
+</section>
+
+<!-- QUIZ -->
+<section id="quiz" class="card hide">
+  <div class="top"><span id="pos"></span><span id="sc"></span></div>
+  <div class="bar"><i id="fill"></i></div>
+  <div class="dots" id="dots"></div>
+  <h2 id="q" style="font-size:1.3rem;margin:.2em 0"></h2>
+  <img id="qi" class="qimg hide" alt="صورة السؤال" title="اضغط للتكبير">
+  <div class="opts" id="opts"></div>
+  <div class="verdict" id="verdict"></div>
+  <div class="row" style="justify-content:space-between">
+    <button class="btn ghost" id="prev">→ السابق</button>
+    <button class="btn danger" id="fin">إنهاء الاختبار</button>
+    <button class="btn" id="next">التالي ←</button>
+  </div>
+  <p class="muted small" style="margin:12px 0 0">اختصارات: 1 2 3 للإجابة · ← التالي · → السابق</p>
+</section>
+
+<!-- END -->
+<section id="end" class="card hide">
+  <p class="muted" style="margin:0">نتيجتك النهائية</p>
+  <div class="score" id="final"></div>
+  <p id="emsg" style="margin:.2em 0 0"></p>
+  <div class="row">
+    <button class="btn" id="again">أعد نفس الأسئلة</button>
+    <button class="btn ghost" id="redo">أعد الأسئلة الخاطئة والمتروكة</button>
+    <button class="btn ghost" id="home">اختبار جديد</button>
+  </div>
+  <h2>مراجعة الإجابات</h2>
+  <div class="row" style="margin-top:0"><button class="chip" data-f="all">الكل</button><button class="chip" data-f="bad">الخاطئة فقط</button><button class="chip" data-f="skip">المتروكة</button></div>
+  <div id="review"></div>
+</section>
+
+<!-- MISTAKES -->
+<section id="mistakes" class="card hide">
+  <h1 style="font-size:1.5rem">أخطائي المحفوظة</h1>
+  <p class="muted small">تُحفظ على هذا الجهاز وتُحذف تلقائيًا من القائمة عندما تجيب عنها صح لاحقًا.</p>
+  <div class="row"><button class="btn" id="mpractice">تدرّب عليها</button><button class="btn danger" id="mclear">امسح القائمة</button><button class="btn ghost" id="mback">رجوع</button></div>
+  <div id="mlist"></div>
+</section>
+</main>
+<div id="zoom" class="hide"><img alt=""></div>
+
+<script>
+const $=id=>document.getElementById(id);
+const LS={get(k,d){try{const v=JSON.parse(localStorage.getItem(k));return v==null?d:v}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+const shuffle=a=>{a=a.slice();for(let k=a.length-1;k>0;k--){const j=Math.floor(Math.random()*(k+1));[a[k],a[j]]=[a[j],a[k]];}return a};
+const show=id=>["start","quiz","end","mistakes"].forEach(s=>$(s).classList.toggle("hide",s!==id));
+let ALL=[],TXT=[],IMG=[],run=[],ans=[],i=0,cfg={exam:false,shO:false,shQ:true},lastList=[],lastMode="",reviewFilter="all";
+
+function ready(d){
+  ALL=d;TXT=d.filter(q=>!q.image);IMG=d.filter(q=>q.image);
+  $("avail").textContent=`المتوفر: ${TXT.length} سؤال نصي و ${IMG.length} سؤال بالصور`;
+  $("tmax").textContent=`(حتى ${TXT.length})`;$("imax").textContent=`(حتى ${IMG.length})`;
+  $("nT").max=TXT.length;$("nI").max=IMG.length;$("go").disabled=false;refreshStart();
+}
+fetch("questions.json").then(r=>r.json()).then(ready).catch(()=>{
+  $("avail").textContent="تعذر تحميل ملف الأسئلة. اختر ملف questions.json يدويًا:";$("file").classList.remove("hide");});
+$("file").onchange=e=>e.target.files[0].text().then(t=>ready(JSON.parse(t)));
+
+function refreshStart(){
+  const w=LS.get("bq_wrong",{});const n=ALL.filter(q=>w[q.id]).length;
+  $("mc").textContent=n;$("pm").disabled=$("mist").disabled=n===0;
+  const h=LS.get("bq_hist",[]);$("histbox").classList.toggle("hide",!h.length);
+  $("hist").innerHTML="";h.slice(-5).reverse().forEach(r=>{const d=document.createElement("div");
+    d.textContent=`${new Date(r.t).toLocaleDateString("ar")} — ${r.s} / ${r.n} (${Math.round(r.s/r.n*100)}%) — ${r.m}`;$("hist").appendChild(d);});
+}
+document.querySelectorAll("[data-p]").forEach(b=>b.onclick=()=>{
+  const p=b.dataset.p,T=TXT.length,I=IMG.length;
+  if(p==="text"){$("nT").value=Math.min(20,T);$("nI").value=0}
+  if(p==="img"){$("nT").value=0;$("nI").value=Math.min(20,I)}
+  if(p==="mix"){$("nT").value=Math.min(20,T);$("nI").value=Math.min(10,I)}
+  if(p==="all"){$("nT").value=T;$("nI").value=I}
+});
+
+function readCfg(){cfg={exam:$("exam").checked,shO:$("shO").checked,shQ:$("shQ").checked}}
+function sample(pool,n){n=Math.max(0,Math.min(n|0,pool.length));const s=shuffle(pool).slice(0,n);return s}
+
+function begin(list,mode){
+  lastList=list;lastMode=mode;
+  let l=cfg.shQ?shuffle(list):list.slice().sort((a,b)=>a.id-b.id);
+  run=l.map(q=>({q,order:(cfg.shO?shuffle:a=>a)(q.options.map((_,k)=>k))}));
+  ans=run.map(()=>null);i=0;
+  const dots=$("dots");dots.innerHTML="";
+  run.forEach((_,k)=>{const b=document.createElement("button");b.className="dot";b.title=`السؤال ${k+1}`;b.onclick=()=>{i=k;render()};dots.appendChild(b)});
+  show("quiz");render();window.scrollTo(0,0);
+}
+$("go").onclick=()=>{
+  readCfg();const nT=+$("nT").value||0,nI=+$("nI").value||0;
+  if(nT+nI<=0){$("msg").textContent="اختر عددًا واحدًا على الأقل من الأسئلة.";return}
+  $("msg").textContent="";
+  const mode=nT&&nI?"مزيج":nI?"صور":"نصي";
+  begin(sample(TXT,nT).concat(sample(IMG,nI)),mode);
+};
+function practiceMistakes(){
+  readCfg();const w=LS.get("bq_wrong",{});const l=ALL.filter(q=>w[q.id]);
+  if(l.length)begin(l,"أخطائي");
+}
+$("pm").onclick=practiceMistakes;
+
+function locked(){return !cfg.exam&&ans[i]!==null}
+function render(){
+  const it=run[i],q=it.q,lk=locked();
+  $("pos").textContent=`السؤال ${i+1} من ${run.length}`;
+  const done=ans.filter(a=>a!==null).length;
+  $("sc").textContent=cfg.exam?`أجبت: ${done} / ${run.length}`:`الصحيح: ${run.reduce((s,r,k)=>s+(ans[k]===r.q.correct?1:0),0)}`;
+  $("fill").style.width=(done/run.length*100)+"%";
+  $("q").textContent=q.question||"";$("q").classList.toggle("hide",!q.question);
+  const im=$("qi");if(q.image){im.src=q.image;im.classList.remove("hide")}else im.classList.add("hide");
+  $("opts").innerHTML="";
+  it.order.forEach(k=>{
+    const b=document.createElement("button");b.className="opt";b.dataset.k=k;
+    b.innerHTML='<span class="mark"></span><span></span>';b.lastChild.textContent=q.options[k];
+    if(lk){b.disabled=true;
+      if(k===q.correct){b.classList.add("right");b.firstChild.textContent="✓"}
+      else if(k===ans[i]){b.classList.add("wrong");b.firstChild.textContent="✕"}}
+    else if(cfg.exam&&ans[i]===k){b.classList.add("sel");b.firstChild.textContent="●"}
+    b.onclick=()=>pick(k);$("opts").appendChild(b);
+  });
+  const v=$("verdict");v.className="verdict";v.textContent="";
+  if(lk){const ok=ans[i]===q.correct;v.textContent=ok?"إجابة صحيحة":"إجابة خاطئة — الجواب الصحيح مظلل بالأخضر";v.classList.add(ok?"ok":"bad")}
+  $("prev").disabled=i===0;$("next").textContent=i===run.length-1?"إنهاء ←":"التالي ←";
+  [...$("dots").children].forEach((d,k)=>{
+    d.className="dot"+(k===i?" cur":"");
+    if(ans[k]!==null){d.classList.add(cfg.exam?"a":(ans[k]===run[k].q.correct?"ok":"bad"))}
+  });
+}
+function record(q,ok){const w=LS.get("bq_wrong",{});if(ok)delete w[q.id];else w[q.id]=(w[q.id]||0)+1;LS.set("bq_wrong",w)}
+function pick(k){
+  if(locked())return;ans[i]=k;
+  if(!cfg.exam)record(run[i].q,k===run[i].q.correct);
+  render();
+}
+function go(d){const n=i+d;if(n<0)return;if(n>=run.length){finish();return}i=n;render();window.scrollTo(0,0)}
+$("next").onclick=()=>go(1);$("prev").onclick=()=>go(-1);$("fin").onclick=()=>finish();
+
+function finish(){
+  const left=ans.filter(a=>a===null).length;
+  if(left&&!confirm(`لم تجب عن ${left} من الأسئلة. هل تريد إنهاء الاختبار؟`))return;
+  if(cfg.exam)run.forEach((r,k)=>{if(ans[k]!==null)record(r.q,ans[k]===r.q.correct)});
+  const s=run.reduce((t,r,k)=>t+(ans[k]===r.q.correct?1:0),0),n=run.length;
+  const h=LS.get("bq_hist",[]);h.push({t:Date.now(),s,n,m:lastMode});LS.set("bq_hist",h.slice(-20));
+  const pct=Math.round(s/n*100);
+  $("final").textContent=`${s} / ${n}  (${pct}%)`;
+  $("emsg").textContent=(left?`تركت ${left} بدون إجابة. `:"")+(pct===100?"ممتاز، علامة كاملة!":pct>=80?"نتيجة جيدة جدًا":pct>=50?"جيد، راجع الأخطاء وأعد المحاولة":"تحتاج إلى مزيد من المراجعة");
+  const miss=run.filter((r,k)=>ans[k]!==r.q.correct).length;$("redo").classList.toggle("hide",miss===0);
+  reviewFilter="all";renderReview();show("end");window.scrollTo(0,0);
+}
+function card(q,chosen,status){
+  const d=document.createElement("div");d.className="rv";
+  const h=document.createElement("div");
+  if(status){const b=document.createElement("span");b.className="badge "+(status==="ok"?"ok":status==="bad"?"bad":"");b.textContent=status==="ok"?"صحيحة":status==="bad"?"خاطئة":"متروكة";h.append(b," ")}
+  h.append(document.createTextNode(q.question||""));d.appendChild(h);
+  if(q.image){const im=document.createElement("img");im.src=q.image;im.className="qimg";im.style.maxHeight="150px";im.onclick=()=>zoomImg(q.image);d.appendChild(im)}
+  const o=document.createElement("div");o.className="opts";
+  q.options.forEach((t,k)=>{const b=document.createElement("div");b.className="opt";
+    b.innerHTML='<span class="mark"></span><span></span>';b.lastChild.textContent=t;
+    if(k===q.correct){b.classList.add("right");b.firstChild.textContent="✓"}
+    else if(k===chosen){b.classList.add("wrong");b.firstChild.textContent="✕"}
+    o.appendChild(b)});
+  d.appendChild(o);return d;
+}
+function renderReview(){
+  const box=$("review");box.innerHTML="";
+  run.forEach((r,k)=>{
+    const st=ans[k]===null?"skip":ans[k]===r.q.correct?"ok":"bad";
+    if(reviewFilter==="bad"&&st!=="bad")return;if(reviewFilter==="skip"&&st!=="skip")return;
+    box.appendChild(card(r.q,ans[k],st));
+  });
+  if(!box.children.length)box.textContent="لا توجد عناصر في هذا العرض.";
+}
+document.querySelectorAll("[data-f]").forEach(b=>b.onclick=()=>{reviewFilter=b.dataset.f;renderReview()});
+$("again").onclick=()=>begin(lastList,lastMode);
+$("redo").onclick=()=>begin(run.filter((r,k)=>ans[k]!==r.q.correct).map(r=>r.q),"أخطاء الجلسة");
+$("home").onclick=()=>{refreshStart();show("start")};
+
+function showMistakes(){
+  const w=LS.get("bq_wrong",{});const l=ALL.filter(q=>w[q.id]);
+  const box=$("mlist");box.innerHTML="";
+  l.forEach(q=>{const c=card(q,undefined,null);const b=document.createElement("div");b.className="muted small";b.textContent=`عدد مرات الخطأ: ${w[q.id]}`;c.prepend(b);box.appendChild(c)});
+  if(!l.length)box.textContent="لا توجد أخطاء محفوظة.";
+  $("mpractice").disabled=!l.length;show("mistakes");window.scrollTo(0,0);
+}
+$("mist").onclick=showMistakes;$("mback").onclick=()=>{refreshStart();show("start")};
+$("mpractice").onclick=practiceMistakes;
+$("mclear").onclick=()=>{if(confirm("هل تريد مسح كل الأخطاء المحفوظة؟")){LS.set("bq_wrong",{});showMistakes()}};
+
+function zoomImg(src){$("zoom").querySelector("img").src=src;$("zoom").classList.remove("hide")}
+$("qi").onclick=()=>zoomImg($("qi").src);$("zoom").onclick=()=>$("zoom").classList.add("hide");
+
+document.addEventListener("keydown",e=>{
+  if($("quiz").classList.contains("hide")||e.target.tagName==="INPUT")return;
+  if(e.key==="Escape")$("zoom").classList.add("hide");
+  if(["1","2","3"].includes(e.key)){const k=run[i].order[+e.key-1];if(k!==undefined)pick(k)}
+  else if(e.key==="ArrowLeft"||e.key==="Enter"){e.preventDefault();go(1)}
+  else if(e.key==="ArrowRight"){e.preventDefault();go(-1)}
+});
+</script>
+</body>
+</html>
