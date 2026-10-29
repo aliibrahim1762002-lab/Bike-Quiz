@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>اختبر نفسك</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --asphalt:#1f2a33; --paper:#f5f6f3; --card:#ffffff; --line:#d9ddd6;
+  --hivis:#f2c200; --ok:#1e8e5a; --ok-bg:#e2f4ea; --bad:#c8402f; --bad-bg:#fbe6e2; --muted:#5d6872;
+}
+@media (prefers-color-scheme:dark){
+  :root{--asphalt:#f1f3ef; --paper:#171d22; --card:#212a31; --line:#35414a;
+        --ok:#4cc58b; --ok-bg:#16382a; --bad:#ff7d6b; --bad-bg:#44201b; --muted:#a2adb6;}
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{font-family:'IBM Plex Sans Arabic',system-ui,sans-serif;background:var(--paper);color:var(--asphalt);
+  min-height:100vh;line-height:1.7;font-size:18px}
+main{max-width:720px;margin:0 auto;padding:24px 16px 64px}
+h1{font-size:2rem;margin:.2em 0 .3em}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px}
+.stripe{height:8px;border-radius:4px;margin-bottom:20px;
+  background:repeating-linear-gradient(-45deg,var(--hivis) 0 14px,var(--asphalt) 14px 28px)}
+.muted{color:var(--muted)}
+button{font:inherit;cursor:pointer}
+.btn{background:var(--hivis);color:#1f2a33;border:2px solid #1f2a33;border-radius:10px;padding:10px 22px;font-weight:700}
+.btn:hover{filter:brightness(1.05)} .btn.ghost{background:transparent;color:var(--asphalt);border-color:var(--line)}
+:focus-visible{outline:3px solid var(--hivis);outline-offset:2px}
+.opts{display:grid;gap:10px;margin:18px 0}
+.opt{text-align:start;background:var(--card);color:var(--asphalt);border:2px solid var(--line);border-radius:10px;
+  padding:12px 16px;display:flex;gap:12px;align-items:center}
+.opt:not(:disabled):hover{border-color:var(--asphalt)}
+.opt .mark{width:1.6em;height:1.6em;border-radius:50%;border:2px solid var(--line);flex:none;display:grid;place-items:center;font-size:.85em}
+.opt.right{background:var(--ok-bg);border-color:var(--ok)} .opt.right .mark{background:var(--ok);border-color:var(--ok);color:#fff}
+.opt.wrong{background:var(--bad-bg);border-color:var(--bad)} .opt.wrong .mark{background:var(--bad);border-color:var(--bad);color:#fff}
+.opt:disabled{cursor:default;color:var(--asphalt)}
+.bar{height:6px;background:var(--line);border-radius:3px;overflow:hidden;margin:6px 0 18px}
+.bar>i{display:block;height:100%;background:var(--ok);transition:width .25s}
+.top{display:flex;justify-content:space-between;font-size:.9rem;color:var(--muted)}
+.qimg{max-width:100%;border-radius:8px;border:1px solid var(--line);margin:8px 0}
+.verdict{min-height:1.8em;font-weight:700}
+.verdict.ok{color:var(--ok)} .verdict.bad{color:var(--bad)}
+.score{font-size:3.2rem;font-weight:700;line-height:1.1;margin:.1em 0}
+.row{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+label.chk{display:flex;gap:10px;align-items:center;margin:8px 0}
+.miss{border-top:1px solid var(--line);padding:12px 0}
+.miss b{color:var(--ok)}
+.hide{display:none}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<main>
+  <div class="stripe" aria-hidden="true"></div>
+
+  <section id="start" class="card">
+    <h1>اختبر نفسك</h1>
+    <p class="muted" id="count">جارٍ تحميل الأسئلة…</p>
+    <label class="chk"><input type="checkbox" id="shQ" checked> ترتيب الأسئلة عشوائي</label>
+    <label class="chk"><input type="checkbox" id="shO"> ترتيب الخيارات عشوائي</label>
+    <div class="row"><button class="btn" id="go" disabled>ابدأ الاختبار</button></div>
+    <p id="err" class="hide muted"></p>
+    <input type="file" id="file" accept=".json" class="hide">
+  </section>
+
+  <section id="quiz" class="card hide" aria-live="polite">
+    <div class="top"><span id="pos"></span><span id="sc"></span></div>
+    <div class="bar"><i id="fill"></i></div>
+    <h2 id="q" style="font-size:1.35rem;margin:.2em 0"></h2>
+    <img id="qi" class="qimg hide" alt="صورة السؤال">
+    <div class="opts" id="opts"></div>
+    <div class="verdict" id="verdict"></div>
+    <div class="row"><button class="btn hide" id="next">التالي</button></div>
+  </section>
+
+  <section id="end" class="card hide">
+    <p class="muted" style="margin:0">نتيجتك النهائية</p>
+    <div class="score" id="final"></div>
+    <p id="msg" style="margin:.2em 0 0"></p>
+    <div class="row">
+      <button class="btn" id="again">أعد الاختبار</button>
+      <button class="btn ghost hide" id="redo">أعد الأسئلة التي أخطأت بها فقط</button>
+    </div>
+    <div id="missed"></div>
+  </section>
+</main>
+
+<script>
+const $ = id => document.getElementById(id);
+let all = [], run = [], i = 0, score = 0, missed = [], locked = false;
+
+const shuffle = a => { a = a.slice(); for (let k=a.length-1;k>0;k--){const j=Math.floor(Math.random()*(k+1));[a[k],a[j]]=[a[j],a[k]];} return a; };
+const show = id => ["start","quiz","end"].forEach(s => $(s).classList.toggle("hide", s!==id));
+
+function ready(data){
+  all = data;
+  $("count").textContent = `عدد الأسئلة: ${all.length}`;
+  $("go").disabled = false;
+}
+fetch("questions.json").then(r => r.json()).then(ready).catch(() => {
+  $("count").textContent = "تعذر تحميل ملف الأسئلة.";
+  $("err").textContent = "إذا فتحت الصفحة مباشرة من الجهاز، اختر ملف questions.json يدويًا:";
+  $("err").classList.remove("hide"); $("file").classList.remove("hide");
+});
+$("file").onchange = e => e.target.files[0].text().then(t => ready(JSON.parse(t)));
+
+function begin(list){
+  run = $("shQ").checked ? shuffle(list) : list.slice();
+  i = 0; score = 0; missed = [];
+  show("quiz"); render();
+}
+
+function render(){
+  const q = run[i]; locked = false;
+  $("pos").textContent = `السؤال ${i+1} من ${run.length}`;
+  $("sc").textContent = `الصحيح: ${score}`;
+  $("fill").style.width = (i/run.length*100) + "%";
+  $("q").textContent = q.question || "";
+  const img = $("qi");
+  if (q.image){ img.src = q.image; img.classList.remove("hide"); } else img.classList.add("hide");
+  $("verdict").textContent = ""; $("verdict").className = "verdict";
+  $("next").classList.add("hide");
+  const items = q.options.map((t,idx)=>({t,idx}));
+  const order = $("shO").checked ? shuffle(items) : items;
+  $("opts").innerHTML = "";
+  order.forEach(o => {
+    const b = document.createElement("button");
+    b.className = "opt"; b.dataset.idx = o.idx;
+    b.innerHTML = '<span class="mark"></span><span></span>';
+    b.lastChild.textContent = o.t;
+    b.onclick = () => pick(o.idx);
+    $("opts").appendChild(b);
+  });
+}
+
+function pick(idx){
+  if (locked) return; locked = true;
+  const q = run[i], ok = idx === q.correct;
+  document.querySelectorAll(".opt").forEach(b => {
+    b.disabled = true;
+    const n = +b.dataset.idx, mark = b.firstChild;
+    if (n === q.correct){ b.classList.add("right"); mark.textContent = "✓"; }
+    else if (n === idx){ b.classList.add("wrong"); mark.textContent = "✕"; }
+  });
+  if (ok) score++; else missed.push(q);
+  $("sc").textContent = `الصحيح: ${score}`;
+  $("verdict").textContent = ok ? "إجابة صحيحة" : "إجابة خاطئة — الجواب الصحيح مظلل بالأخضر";
+  $("verdict").classList.add(ok ? "ok" : "bad");
+  $("next").textContent = i === run.length-1 ? "اعرض النتيجة" : "التالي";
+  $("next").classList.remove("hide"); $("next").focus();
+}
+
+function finish(){
+  $("fill").style.width = "100%";
+  const pct = Math.round(score/run.length*100);
+  $("final").textContent = `${score} / ${run.length}  (${pct}%)`;
+  $("msg").textContent = pct===100 ? "ممتاز، علامة كاملة!" : pct>=80 ? "نتيجة جيدة جدًا" : pct>=50 ? "جيد، راجع الأخطاء وأعد المحاولة" : "تحتاج إلى مزيد من المراجعة";
+  $("redo").classList.toggle("hide", missed.length===0);
+  const box = $("missed"); box.innerHTML = "";
+  missed.forEach(q => {
+    const d = document.createElement("div"); d.className = "miss";
+    const p = document.createElement("div"); p.textContent = q.question || "(سؤال بصورة)";
+    const a = document.createElement("div"); a.className = "muted"; a.append("الجواب الصحيح: ");
+    const b = document.createElement("b"); b.textContent = q.options[q.correct]; a.append(b);
+    d.append(p, a); box.appendChild(d);
+  });
+  show("end");
+}
+
+$("go").onclick = () => begin(all);
+$("next").onclick = () => { if (i === run.length-1) finish(); else { i++; render(); } };
+$("again").onclick = () => begin(all);
+$("redo").onclick = () => begin(missed);
+</script>
+</body>
+</html>
