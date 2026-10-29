@@ -60,12 +60,12 @@ label.chk{display:flex;gap:10px;align-items:center;margin:6px 0}
 <body>
 <main>
 <div class="stripe" aria-hidden="true"></div>
-
+ 
 <!-- START -->
 <section id="start" class="card">
   <h1>اختبر نفسك</h1>
   <p class="muted" id="avail">جارٍ تحميل الأسئلة…</p>
-
+ 
   <h2>نوع الأسئلة وعددها</h2>
   <div class="row" style="margin-top:0">
     <button class="chip" data-p="text">أسئلة نصية فقط</button>
@@ -77,12 +77,12 @@ label.chk{display:flex;gap:10px;align-items:center;margin:6px 0}
     <label class="f">عدد الأسئلة النصية <span class="muted small" id="tmax"></span><input type="number" id="nT" min="0" value="20"></label>
     <label class="f">عدد أسئلة الصور <span class="muted small" id="imax"></span><input type="number" id="nI" min="0" value="10"></label>
   </div>
-
+ 
   <h2>خيارات</h2>
   <label class="chk"><input type="checkbox" id="shQ" checked> ترتيب الأسئلة عشوائي</label>
   <label class="chk"><input type="checkbox" id="shO"> ترتيب الخيارات عشوائي</label>
   <label class="chk"><input type="checkbox" id="exam"> وضع الامتحان (لا تظهر الإجابات إلا في النهاية، ويمكنك تغيير إجابتك)</label>
-
+ 
   <div class="row"><button class="btn" id="go" disabled>ابدأ الاختبار</button>
     <button class="btn ghost" id="mist">أخطائي المحفوظة (<span id="mc">0</span>)</button>
     <button class="btn ghost" id="pm">تدرّب على أخطائي</button></div>
@@ -90,7 +90,7 @@ label.chk{display:flex;gap:10px;align-items:center;margin:6px 0}
   <div id="histbox" class="hide"><h2>آخر النتائج</h2><div id="hist" class="small muted"></div></div>
   <input type="file" id="file" accept=".json" class="hide">
 </section>
-
+ 
 <!-- QUIZ -->
 <section id="quiz" class="card hide">
   <div class="top"><span id="pos"></span><span id="sc"></span></div>
@@ -107,7 +107,7 @@ label.chk{display:flex;gap:10px;align-items:center;margin:6px 0}
   </div>
   <p class="muted small" style="margin:12px 0 0">اختصارات: 1 2 3 للإجابة · ← التالي · → السابق</p>
 </section>
-
+ 
 <!-- END -->
 <section id="end" class="card hide">
   <p class="muted" style="margin:0">نتيجتك النهائية</p>
@@ -122,7 +122,7 @@ label.chk{display:flex;gap:10px;align-items:center;margin:6px 0}
   <div class="row" style="margin-top:0"><button class="chip" data-f="all">الكل</button><button class="chip" data-f="bad">الخاطئة فقط</button><button class="chip" data-f="skip">المتروكة</button></div>
   <div id="review"></div>
 </section>
-
+ 
 <!-- MISTAKES -->
 <section id="mistakes" class="card hide">
   <h1 style="font-size:1.5rem">أخطائي المحفوظة</h1>
@@ -132,14 +132,14 @@ label.chk{display:flex;gap:10px;align-items:center;margin:6px 0}
 </section>
 </main>
 <div id="zoom" class="hide"><img alt=""></div>
-
+ 
 <script>
 const $=id=>document.getElementById(id);
 const LS={get(k,d){try{const v=JSON.parse(localStorage.getItem(k));return v==null?d:v}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
 const shuffle=a=>{a=a.slice();for(let k=a.length-1;k>0;k--){const j=Math.floor(Math.random()*(k+1));[a[k],a[j]]=[a[j],a[k]];}return a};
 const show=id=>["start","quiz","end","mistakes"].forEach(s=>$(s).classList.toggle("hide",s!==id));
 let ALL=[],TXT=[],IMG=[],run=[],ans=[],i=0,cfg={exam:false,shO:false,shQ:true},lastList=[],lastMode="",reviewFilter="all";
-
+ 
 function ready(d){
   ALL=d;TXT=d.filter(q=>!q.image);IMG=d.filter(q=>q.image);
   $("avail").textContent=`المتوفر: ${TXT.length} سؤال نصي و ${IMG.length} سؤال بالصور`;
@@ -149,7 +149,7 @@ function ready(d){
 fetch("questions.json").then(r=>r.json()).then(ready).catch(()=>{
   $("avail").textContent="تعذر تحميل ملف الأسئلة. اختر ملف questions.json يدويًا:";$("file").classList.remove("hide");});
 $("file").onchange=e=>e.target.files[0].text().then(t=>ready(JSON.parse(t)));
-
+ 
 function refreshStart(){
   const w=LS.get("bq_wrong",{});const n=ALL.filter(q=>w[q.id]).length;
   $("mc").textContent=n;$("pm").disabled=$("mist").disabled=n===0;
@@ -164,10 +164,10 @@ document.querySelectorAll("[data-p]").forEach(b=>b.onclick=()=>{
   if(p==="mix"){$("nT").value=Math.min(20,T);$("nI").value=Math.min(10,I)}
   if(p==="all"){$("nT").value=T;$("nI").value=I}
 });
-
+ 
 function readCfg(){cfg={exam:$("exam").checked,shO:$("shO").checked,shQ:$("shQ").checked}}
 function sample(pool,n){n=Math.max(0,Math.min(n|0,pool.length));const s=shuffle(pool).slice(0,n);return s}
-
+ 
 function begin(list,mode){
   lastList=list;lastMode=mode;
   let l=cfg.shQ?shuffle(list):list.slice().sort((a,b)=>a.id-b.id);
@@ -189,7 +189,7 @@ function practiceMistakes(){
   if(l.length)begin(l,"أخطائي");
 }
 $("pm").onclick=practiceMistakes;
-
+ 
 function locked(){return !cfg.exam&&ans[i]!==null}
 function render(){
   const it=run[i],q=it.q,lk=locked();
@@ -225,7 +225,7 @@ function pick(k){
 }
 function go(d){const n=i+d;if(n<0)return;if(n>=run.length){finish();return}i=n;render();window.scrollTo(0,0)}
 $("next").onclick=()=>go(1);$("prev").onclick=()=>go(-1);$("fin").onclick=()=>finish();
-
+ 
 function finish(){
   const left=ans.filter(a=>a===null).length;
   if(left&&!confirm(`لم تجب عن ${left} من الأسئلة. هل تريد إنهاء الاختبار؟`))return;
@@ -265,7 +265,7 @@ document.querySelectorAll("[data-f]").forEach(b=>b.onclick=()=>{reviewFilter=b.d
 $("again").onclick=()=>begin(lastList,lastMode);
 $("redo").onclick=()=>begin(run.filter((r,k)=>ans[k]!==r.q.correct).map(r=>r.q),"أخطاء الجلسة");
 $("home").onclick=()=>{refreshStart();show("start")};
-
+ 
 function showMistakes(){
   const w=LS.get("bq_wrong",{});const l=ALL.filter(q=>w[q.id]);
   const box=$("mlist");box.innerHTML="";
@@ -276,10 +276,10 @@ function showMistakes(){
 $("mist").onclick=showMistakes;$("mback").onclick=()=>{refreshStart();show("start")};
 $("mpractice").onclick=practiceMistakes;
 $("mclear").onclick=()=>{if(confirm("هل تريد مسح كل الأخطاء المحفوظة؟")){LS.set("bq_wrong",{});showMistakes()}};
-
+ 
 function zoomImg(src){$("zoom").querySelector("img").src=src;$("zoom").classList.remove("hide")}
 $("qi").onclick=()=>zoomImg($("qi").src);$("zoom").onclick=()=>$("zoom").classList.add("hide");
-
+ 
 document.addEventListener("keydown",e=>{
   if($("quiz").classList.contains("hide")||e.target.tagName==="INPUT")return;
   if(e.key==="Escape")$("zoom").classList.add("hide");
